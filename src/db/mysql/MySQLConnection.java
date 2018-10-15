@@ -48,11 +48,11 @@ public class MySQLConnection implements DBConnection {
 	   	}
 	   	try {
 	   		 String sql = "INSERT IGNORE INTO history(user_id,item_id) VALUES (?, ?)";
-	   		 PreparedStatement ps = conn.prepareStatement(sql);
-	   		 ps.setString(1, userId);
+	   		 PreparedStatement pStatement = conn.prepareStatement(sql);
+	   		 pStatement.setString(1, userId);
 	   		 for (String itemId : itemIds) {
-	   			 ps.setString(2, itemId);
-	   			 ps.execute();
+	   			 pStatement.setString(2, itemId);
+	   			 pStatement.execute();
 	   		 }
 	   	} catch (Exception e) {
 	   		 e.printStackTrace();
@@ -70,11 +70,11 @@ public class MySQLConnection implements DBConnection {
 	   	}
 		try {
 	   		 String sql = "DELETE FROM history WHERE user_id = ? AND item_id = ?";
-	   		 PreparedStatement ps = conn.prepareStatement(sql);
-	   		 ps.setString(1, userId);
+	   		 PreparedStatement pStatement = conn.prepareStatement(sql);
+	   		 pStatement.setString(1, userId);
 	   		 for (String itemId : itemIds) {
-	   			 ps.setString(2, itemId);
-	   			 ps.execute();
+	   			 pStatement.setString(2, itemId);
+	   			 pStatement.execute();
 	   		 }
 	   	} catch (Exception e) {
 	   		 e.printStackTrace();
@@ -146,22 +146,39 @@ public class MySQLConnection implements DBConnection {
 	@Override
 	public Set<String> getCategories(String itemId) {
 		if (conn == null) {
-			return null;
+			return new HashSet<>();
 		}
-		Set<String> categories = new HashSet<>();
+		Set<String>categories = new HashSet<>();
 		try {
-			String sql = "SELECT category from categories WHERE item_id = ? ";
-			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.setString(1, itemId);
-			ResultSet rs = statement.executeQuery();
-			while (rs.next()) {
-				String category = rs.getString("category");
-				categories.add(category);
+			String sql = "SELECT category from categories WHERE item_id = ?";
+			PreparedStatement pStatement = conn.prepareStatement(sql);
+			pStatement.setString(1, itemId);
+			ResultSet rSet = pStatement.executeQuery();
+			while (rSet.next()) {
+				categories.add(rSet.getString("category"));
+				
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 		return categories;
+//		if (conn == null) {
+//			return null;
+//		}
+//		Set<String> categories = new HashSet<>();
+//		try {
+//			String sql = "SELECT category from categories WHERE item_id = ? ";
+//			PreparedStatement statement = conn.prepareStatement(sql);
+//			statement.setString(1, itemId);
+//			ResultSet rs = statement.executeQuery();
+//			while (rs.next()) {
+//				String category = rs.getString("category");
+//				categories.add(category);
+//			}
+//		} catch (SQLException e) {
+//			System.out.println(e.getMessage());
+//		}
+//		return categories;
 
 	}
 
