@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,7 +40,14 @@ public class ItemHistory extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String userId = request.getParameter("user_id");
+		HttpSession session = request.getSession(false);
+		if (session == null) {
+			response.setStatus(403);
+			return;
+		}
+		String userId = session.getAttribute("user_id").toString(); 
+
+		//String userId = request.getParameter("user_id");
 		JSONArray array = new JSONArray();
 		DBConnection conn = DBConnectionFactory.getConnection();
 		try {
@@ -61,10 +69,16 @@ public class ItemHistory extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	   	 DBConnection connection = DBConnectionFactory.getConnection();
+		HttpSession session = request.getSession(false);
+		if (session == null) {
+			response.setStatus(403);
+			return;
+		}
+		String userId = session.getAttribute("user_id").toString(); 
+		DBConnection connection = DBConnectionFactory.getConnection();
 	   	 try {
 	   		 JSONObject input = RpcHelper.readJSONObject(request);
-	   		 String userId = input.getString("user_id");
+	   		 //String userId = input.getString("user_id");
 	   		 JSONArray array = input.getJSONArray("favorite");
 	   		 List<String> itemIds = new ArrayList<>();
 	   		 for(int i = 0; i < array.length(); ++i) {
@@ -86,10 +100,16 @@ public class ItemHistory extends HttpServlet {
 	 * @see HttpServlet#doDelete(HttpServletRequest, HttpServletResponse)
 	 */
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	   	 DBConnection connection = DBConnectionFactory.getConnection();
+		HttpSession session = request.getSession(false);
+		if (session == null) {
+			response.setStatus(403);
+			return;
+		}
+		String userId = session.getAttribute("user_id").toString();  
+		DBConnection connection = DBConnectionFactory.getConnection();
 	   	 try {
 	   		 JSONObject input = RpcHelper.readJSONObject(request);
-	   		 String userId = input.getString("user_id");
+	   		 //String userId = input.getString("user_id");
 	   		 JSONArray array = input.getJSONArray("favorite");
 	   		 List<String> itemIds = new ArrayList<>();
 	   		 for(int i = 0; i < array.length(); ++i) {

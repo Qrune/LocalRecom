@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.mysql.cj.xdevapi.Result;
+
 import ExternalApis.TicketMasterAPI;
 
 public class MySQLConnection implements DBConnection {
@@ -238,13 +240,44 @@ public class MySQLConnection implements DBConnection {
 
 	@Override
 	public String getFullname(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		if (conn == null) {
+			System.out.println("Connection is null");
+			return "";
+		}
+		String name = "";
+		try {
+			String sql = "SELECT first_name, last_name FROM users WHERE user_id= ?";
+			PreparedStatement pStatement = conn.prepareStatement(sql);
+			pStatement.setString(1, userId);
+			ResultSet rSet = pStatement.executeQuery();
+			while (rSet.next()) {
+				name = String.join(" ", rSet.getString("first_name"),rSet.getString("last_name"));
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return name;
 	}
 
 	@Override
 	public boolean verifyLogin(String userId, String password) {
-		// TODO Auto-generated method stub
+		if (conn == null) {
+			return false;
+		}
+		try {
+			String sql = "SELECT user_id FROM users WHERE user_id = ? AND password = ?";
+			PreparedStatement pStatement = conn.prepareStatement(sql);
+			pStatement.setString(1, userId);
+			pStatement.setString(2, password);
+			ResultSet rSet = pStatement.executeQuery();
+			while (rSet.next()) {
+				return true;
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return false;
 	}
 
